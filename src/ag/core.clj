@@ -2,20 +2,18 @@
 
 (defmacro game [name]
   `(do
-     (ns ~name (:use ag.core))
+     (ns ~name (:use ag.core ~'user))
      (def ~'current (atom nil))
      (def ~'pages (atom {}))
 
      (defn ~'what-happened? []
        (println (-> @~'pages (@~'current) (get 0)))
-       '~'.)))
+       (-> ~'current deref name symbol))))
 
 (defmacro choose [choice]
-  `(let [previous# (-> @~'current name symbol)]
-     (try
-       (goto ((get-in @~'pages [@~'current 1]) ~(keyword choice)))
-       (catch IllegalArgumentException ~'_ (println "That is not a valid choice!")))
-     previous#))
+  `(try
+     (goto ((get-in @~'pages [@~'current 1]) ~(keyword choice)))
+     (catch IllegalArgumentException ~'_ (println "That is not a valid choice!"))))
 
 (defmacro page
   "Makes a page in your adventure book.
@@ -27,7 +25,7 @@
 
 (defmacro start [s]
   `(defn ~'start-over []
-     (go-to '~s)))
+     (go-to ~s)))
 
 (defmacro goto [page]
   `(do
