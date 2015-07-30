@@ -27,4 +27,4 @@
      (defn ~'start-over []
        (reset! current ~(keyword s))
        (what-happened?))
-     (start-over)))
+     (~'start-over)))
