@@ -13,7 +13,7 @@
 (defmacro choose [choice]
   `(let [previous# (-> @~'current name symbol)]
      (try
-       (reset! ~'current ((get-in @~'pages [@~'current 1]) ~(keyword choice)))
+       (goto ((get-in @~'pages [@~'current 1]) ~(keyword choice)))
        (catch IllegalArgumentException ~'_ (println "That is not a valid choice!")))
      (~'what-happened?)
      previous#))
@@ -27,10 +27,9 @@
       #(case % ~@(map keyword cases))]))
 
 (defmacro start [s]
-  `(do
-     (defn ~'start-over []
-       (reset! ~'current ~(keyword s))
-       (~'what-happened?))
-     (~'start-over)))
+  `(defn ~'start-over []
+     (goto (keyword '~s))
+     (~'what-happened?)))
 
-;; go to a page
+(defmacro goto [page]
+  `(reset! ~'current ~page))
